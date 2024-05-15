@@ -1,0 +1,13 @@
+train: C:/Projects/MetalMarkAI/train
+val: C:/Projects/MetalMarkAI/valid
+test: C:/Projects/MetalMarkAI/test
+
+nc: 3
+names: ['fail', 'metal', 'pass']
+
+roboflow:
+  workspace: wileyliaohs
+  project: mma-ue2bb
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/wileyliaohs/mma-ue2bb/dataset/1
