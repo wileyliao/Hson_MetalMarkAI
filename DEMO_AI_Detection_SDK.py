@@ -1,11 +1,6 @@
 import cv2
 
-def check_inside(box1, box2):
-    x1, y1, x2, y2 = box1
-    x1i, y1i, x2i, y2i = box2
-    return x1 <= x1i and x2 >= x2i and y1 <= y2 and y1 <= y2
-
-def process_frame(frame, model):
+def process_frame(frame, model, confidence_thresholld):
     results = model(frame)
     boxes_by_class = {'metal': [], 'pass': [], 'fail': []}
     for result in results:
