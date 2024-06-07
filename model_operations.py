@@ -107,4 +107,4 @@ def classify_and_mark_images(model, metals_with_positions, rows, cols, threshold
         except Exception as e:
             print(f"Error processing metal at position ({row}, {col}): {e}")
 
-    return {pos: res for pos, res in classification_results.items() if res != "empty"}
+    return classification_results

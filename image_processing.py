@@ -74,6 +74,7 @@ def map_boxes(boxes, ori_tensor, rez_tensor, rows, cols, output_dir, debug_mode 
         positions = torch.stack((row_indices, col_indices), dim=1).float().to(boxes.device)  # 保持在 GPU 上
         mapped_boxes_with_positions = torch.cat((mapped_boxes, positions), dim=1)
         '''Matrix'''
+
     except Exception as e:
         print(f"Error in mapping boxes: {e}")
         raise
