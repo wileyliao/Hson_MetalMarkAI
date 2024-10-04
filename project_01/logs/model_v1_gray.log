@@ -1,0 +1,43 @@
+2024-06-04 15:16:28,206 - INFO - --------------------------------------------
+2024-06-04 15:16:28,206 - INFO - --------Detection command received----------
+2024-06-04 15:16:28,206 - INFO - --------------------------------------------
+2024-06-04 15:16:28,206 - INFO - -------Using device: cuda
+2024-06-04 15:16:28,355 - INFO - --GPU--Model model_v1_gray loaded to device
+2024-06-04 15:16:28,426 - INFO - -------Image preprocessed and moved to cuda
+2024-06-04 15:16:29,125 - INFO - -------------------------------
+2024-06-04 15:16:29,125 - INFO - ---Detection completed on image
+2024-06-04 15:16:29,125 - INFO - ---Detection results processed: 6 metal boxes detected
+2024-06-04 15:16:29,125 - INFO - ---Matrix positions and labels determined
+2024-06-04 15:16:29,370 - INFO - ---Annotated image saved to 'annotated_image.png'
+2024-06-04 15:16:29,370 - INFO - Position (1, 1): [313, 192, 450, 380] - Label: unknown
+2024-06-04 15:16:29,370 - INFO - Position (1, 0): [24, 206, 158, 390] - Label: unknown
+2024-06-04 15:16:29,370 - INFO - Position (0, 1): [168, 3, 301, 188] - Label: unknown
+2024-06-04 15:16:29,370 - INFO - Position (2, 2): [461, 382, 598, 564] - Label: unknown
+2024-06-04 15:16:29,370 - INFO - Position (0, 0): [21, 9, 159, 191] - Label: unknown
+2024-06-04 15:16:29,370 - INFO - Empty position: (0, 2) - Label: unknown
+2024-06-04 15:16:29,370 - INFO - Empty position: (1, 2) - Label: unknown
+2024-06-04 15:16:29,370 - INFO - Empty position: (2, 0) - Label: unknown
+2024-06-04 15:16:29,370 - INFO - Empty position: (2, 1) - Label: unknown
+2024-06-04 16:51:55,207 - INFO - --------------------------------------------
+2024-06-04 16:51:55,207 - INFO - --------Detection command received----------
+2024-06-04 16:51:55,207 - INFO - --------------------------------------------
+2024-06-04 16:51:55,207 - INFO - -------Using device: cuda
+2024-06-04 16:51:55,356 - INFO - --GPU--Model model_v1_gray loaded to device
+2024-06-04 16:51:55,426 - INFO - -------Image preprocessed and moved to cuda
+2024-06-04 16:51:56,129 - INFO - -------------------------------
+2024-06-04 16:51:56,129 - INFO - ---Detection completed on image
+2024-06-04 16:51:56,129 - INFO - ---Detection results processed: 6 metal boxes detected
+2024-06-04 16:51:56,129 - INFO - ---Matrix positions and labels determined
+2024-06-04 16:51:56,375 - INFO - ---Annotated image saved to 'annotated_image.png'
+2024-06-04 16:51:56,376 - INFO - Position (1, 1): [168, 195, 305, 383] - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Position (1, 0): [24, 206, 158, 390] - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Position (1, 2): [313, 192, 450, 380] - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Position (0, 1): [168, 3, 301, 188] - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Position (2, 3): [461, 382, 598, 564] - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Position (0, 0): [21, 9, 159, 191] - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Empty position: (2, 1) - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Empty position: (0, 3) - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Empty position: (2, 0) - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Empty position: (0, 2) - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Empty position: (2, 2) - Label: unknown
+2024-06-04 16:51:56,376 - INFO - Empty position: (1, 3) - Label: unknown
