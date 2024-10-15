@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify
 from ultralytics import YOLO
 import torch
-
-from Camera_Control import CameraHandler
+import os
+from Camera_Control import camera_handler
 from File_Management import generate_file_path_and_name
 
 from project_01.product_01_main import product_01_main
 
 app = Flask(__name__)
-camera_handler = CameraHandler()
+# camera_handler = CameraHandler()
 db_path = r'C:\ichun_test'
 
 
@@ -18,7 +18,7 @@ def load_model(model_path):
     return model
 
 
-product_01_model_path = r'.\project_01\model_v1_gray.pt'
+product_01_model_path = "C:/AI_detection/Hson_MetalMarkAI/project_01/model_v1_gray.pt"
 product_01_model = load_model(product_01_model_path)
 
 product_function_and_model_map = {
@@ -40,9 +40,9 @@ def main():
 
         print(f"Save image as name: {image_file_name}, in folder: {absolute_path_to_db}")
 
-        current_image = camera_handler.capture_image(absolute_path_to_db, image_file_name)
-        print(current_image)
-        test_image = r'.\project_01\test888.png'
+        # current_image = camera_handler.capture_image(absolute_path_to_db, image_file_name)
+        # print(current_image)
+        test_image = "C:/AI_detection/Hson_MetalMarkAI/project_01/test888.png"
 
         if product_code in product_function_and_model_map:
             product_main_function, product_model = product_function_and_model_map[product_code]
