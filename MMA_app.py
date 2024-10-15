@@ -5,7 +5,7 @@ import os
 from Camera_Control import camera_handler
 from File_Management import generate_file_path_and_name
 
-from project_01.product_01_main import product_01_main
+from product_01.product_01_main import product_01_main
 
 app = Flask(__name__)
 # camera_handler = CameraHandler()
