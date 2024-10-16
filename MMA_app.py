@@ -1,12 +1,11 @@
 from flask import Flask, request, jsonify
 from ultralytics import YOLO
 import torch
-
+import os
 from Camera_Control import CameraHandler
 from File_Management import generate_file_path_and_name
 
 from product_01.product_01_main import product_01_main
-from product_03.product_03_main import product_03_main
 
 app = Flask(__name__)
 # camera_handler = CameraHandler()
@@ -19,31 +18,25 @@ def load_model(model_path):
     return model
 
 
-product_01_model_path = r"C:\Projects\upload\MetalMarkAI\product_01\model_v1_gray.pt"
+product_01_model_path = "C:/AI_detection/Hson_MetalMarkAI/project_01/model_v1_gray.pt"
 
 product_01_model = load_model(product_01_model_path)
 
-product_03_model_path = None
-product_03_model = None
-
 product_function_and_model_map = {
-    'product_01': (product_01_main, product_01_model),
-    'product_03': (product_03_main, product_03_model)
+    'product_01': (product_01_main, product_01_model)
 }
 
 
 @app.route('/MetalMarkAI', methods=['POST'])
 def main():
     try:
-        "取得api內容"
         data = request.json['Data'][0]
-        # 測試階段
+        print("request received...")
         detect_stage = data.get('stage')
-        # 取得矩陣大小
+
         product_matrix_row, product_matrix_column = map(int, data.get('matrix').split(','))
-        # 取得產品料號
+
         product_code = data.get('product')
-        # 取得操作日期、時間
         date_info, time_info = data.get('op_time').split(' ')
 
         absolute_path_to_db, image_file_name = generate_file_path_and_name(db_path, product_code, date_info, time_info)
@@ -51,7 +44,9 @@ def main():
         print(f"Save image as name: {image_file_name}, in folder: {absolute_path_to_db}")
 
         # current_image = camera_handler.capture_image(absolute_path_to_db, image_file_name)
-        test_image = r"C:\Projects\upload\MetalMarkAI\product_01\test888.png"
+
+        test_image = "C:/AI_detection/Hson_MetalMarkAI/project_01/test888.png"
+
 
         if product_code in product_function_and_model_map:
             product_main_function, product_model = product_function_and_model_map[product_code]
@@ -62,14 +57,14 @@ def main():
                 product_matrix_column
             )
 
-            print("Result")
-            print(product_detected_result)
 
             # 提取fail座標
             fail_coords = [f"{key[0]}, {key[1]}" for key, value in product_detected_result.items() if value == 'fail']
 
             # 判斷是否有fail的結果
             value_ary = fail_coords if fail_coords else "pass"
+
+
 
             return jsonify(
                 {
@@ -93,4 +88,5 @@ def main():
 
 if __name__ == '__main__':
     app.run(port=2486)
-    # camera_handler.release()
+    camera_handler = CameraHandler()
+    camera_handler.release()

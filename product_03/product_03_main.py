@@ -12,13 +12,12 @@ def product_03_main(image_path, product_03_model, product_03_rows, product_03_co
     try:
         start_time = time.time()
 
-        random_fail_row = random.randint(0, product_03_rows)
-        random_fail_col = random.randint(0, product_03_columns)
-        print(product_03_rows)
+        random_fail_row = random.randint(0, product_03_rows - 1)
+        random_fail_col = random.randint(0, product_03_columns - 1)
 
         classification_results = {}
-        for row in range(product_03_rows + 1):
-            for column in range(product_03_columns + 1):
+        for row in range(product_03_rows):
+            for column in range(product_03_columns):
                 if (row, column) == (random_fail_row, random_fail_col):
                     classification_results[(row, column)] = 'fail'
                 else:
