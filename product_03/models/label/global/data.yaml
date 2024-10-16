@@ -1,0 +1,13 @@
+train: C:/Projects/upload/MetalMarkAI/product_03/models/label/train/images
+val: C:/Projects/upload/MetalMarkAI/product_03/models/label/valid/images
+test: C:/Projects/upload/MetalMarkAI/product_03/models/label/test/images
+
+nc: 1
+names: ['product']
+
+roboflow:
+  workspace: wileyliaohs
+  project: mma-ydjvg
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/wileyliaohs/mma-ydjvg/dataset/2

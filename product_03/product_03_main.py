@@ -1,9 +1,3 @@
-# algorithm:
-# 圖像預處理(縮小、轉成gpu張量)
-# 檢測物體(定位銅板位置)
-# 從原始影像裁剪出每一塊銅板
-# 二次檢測並標記結果
-
 import random
 import time
 
@@ -22,8 +16,6 @@ def product_03_main(image_path, product_03_model, product_03_rows, product_03_co
                     classification_results[(row, column)] = 'fail'
                 else:
                     classification_results[(row, column)] = 'pass'
-
-
 
         time.sleep(random.uniform(0.5, 1.5))
         end_time = time.time()

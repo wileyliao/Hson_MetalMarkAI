@@ -1,0 +1,13 @@
+train: C:\Projects\upload\MetalMarkAI\product_03\models\label\local\train\images
+val: C:\Projects\upload\MetalMarkAI\product_03\models\label\local\valid\images
+test: C:\Projects\upload\MetalMarkAI\product_03\models\label\local\test\images
+
+nc: 2
+names: ['door', 'point']
+
+roboflow:
+  workspace: wileyliaohs
+  project: mma_p03_local
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/wileyliaohs/mma_p03_local/dataset/2
