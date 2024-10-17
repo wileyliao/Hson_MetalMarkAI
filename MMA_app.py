@@ -1,33 +1,30 @@
 from flask import Flask, request, jsonify
 from ultralytics import YOLO
-import torch
-import os
 from Camera_Control import CameraHandler
 from File_Management import generate_file_path_and_name
-import time
-import random
 from product_01.product_01_main import product_01_main
+from product_03.product_03_main import product_03_main
+import json
 
 app = Flask(__name__)
 # camera_handler = CameraHandler()
+
 db_path = r'C:\ichun_test'
 
 
-def load_model(model_path):
-    model = YOLO(model_path)
-    model.to(torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
-    return model
+with open('path_config.json', 'r') as file:
+    path_config = json.load(file)
 
 
-
-product_01_model_path = r"C:\Projects\upload\MetalMarkAI\product_01\model_v1_gray.pt"
-
-
-product_01_model = load_model(product_01_model_path)
-
-product_function_and_model_map = {
-    'product_01': (product_01_main, product_01_model)
+product_function_model_map = {
+    'product_03': (
+        product_03_main,
+        YOLO(path_config["product_03_model_global_path"]),
+        YOLO(path_config["product_03_model_local_path"]))
 }
+
+
+test_usage_image_path = r"C:\Projects\upload\MetalMarkAI\product_03\data\global\origin\008.png"
 
 
 @app.route('/MetalMarkAI', methods=['POST'])
@@ -46,43 +43,22 @@ def main():
 
         # absolute_path_to_db, image_file_name = generate_file_path_and_name(db_path, product_code, date_info, time_info)
 
-        # print(f"Save image as name: {image_file_name}, in folder: {absolute_path_to_db}")
-
         # current_image = camera_handler.capture_image(absolute_path_to_db, image_file_name)
 
         # test_image = r"C:\Projects\upload\MetalMarkAI\product_01\test888.png"
+        product_detected_result = {}
+        product_execution_time = 0
 
-        # if product_code in product_function_and_model_map:
-        #     product_main_function, product_model = product_function_and_model_map[product_code]
-        #     product_detected_result, product_execution_time = product_main_function(
-        #         test_image,
-        #         product_model,
-        #         product_matrix_row,
-        #         product_matrix_column
-        #     )
+        if product_code in product_function_model_map:
+            product_main_function, model_global, model_local = product_function_model_map[product_code]
 
-        start_time = time.time()
-
-        random_fail_row = random.randint(0, product_matrix_row - 1)
-        random_fail_col = random.randint(0, product_matrix_column - 1)
-
-        classification_results = {}
-        for row in range(product_matrix_row):
-            for column in range(product_matrix_column):
-                if (row, column) == (random_fail_row, random_fail_col):
-                    classification_results[(row, column)] = 'fail'
-                else:
-                    classification_results[(row, column)] = 'pass'
-
-        time.sleep(random.uniform(0.5, 1.5))
-        end_time = time.time()
-        execution_time = end_time - start_time
-
-
-
+            product_detected_result, product_execution_time = product_main_function(
+                test_usage_image_path,
+                model_global, model_local
+            )
 
         # 提取fail座標
-        fail_coords = [f"{key[0]}, {key[1]}" for key, value in classification_results.items() if value == 'fail']
+        fail_coords = [f"{key[0]}, {key[1]}" for key, value in product_detected_result.items() if value == 'fail']
 
         # 判斷是否有fail的結果
         value_ary = fail_coords if fail_coords else "pass"
@@ -94,11 +70,11 @@ def main():
                         "stage": f"{detect_stage}",
                         "op_time": f"{date_info} {time_info}",
                         "product": f"{product_code}",
-                        "details": f"{classification_results}"
+                        "details": f"{product_detected_result}"
                     }
                 ],
                 "ValueAry": value_ary,
-                "timeTaken": f"{execution_time}"
+                "timeTaken": f"{product_execution_time}"
             }
         )
 
