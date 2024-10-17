@@ -24,7 +24,7 @@ product_function_model_map = {
 }
 
 
-test_usage_image_path = r"C:\Projects\upload\MetalMarkAI\product_03\data\global\origin\008.png"
+test_usage_image_path = path_config["product_03_test_image_path"]
 
 
 @app.route('/MetalMarkAI', methods=['POST'])
