@@ -1,4 +1,4 @@
-postman:
+post example:
 ```
 {
     "Data": [
@@ -10,4 +10,13 @@ postman:
         }
     ]
 }
+```
+
+path_config.json:
+```
+{
+    "model_global_path": "absolute/path/to/global.pt",
+    "model_local_path": "absolute/path/to/local.pt"
+}
+
 ```
