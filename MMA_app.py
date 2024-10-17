@@ -24,40 +24,36 @@ product_function_model_map = {
 }
 
 
-test_usage_image_path = path_config["product_03_test_image_path"]
+product_03_test_usage_image_path = path_config["product_03_test_image_path"]
 
 
 @app.route('/MetalMarkAI', methods=['POST'])
 def main():
     try:
+        # Receive data
         data = request.json['Data'][0]
-        print("request received...")
         detect_stage = data.get('stage')
-
-        # 取得矩陣大小
-        product_matrix_row, product_matrix_column = map(int, data.get('matrix').split(','))
-        # 取得產品料號
-
         product_code = data.get('product')
         date_info, time_info = data.get('op_time').split(' ')
 
-        # absolute_path_to_db, image_file_name = generate_file_path_and_name(db_path, product_code, date_info, time_info)
-
+        # Get image form camera & write into disk
+        # abs_path_to_db, image_file_name = generate_file_path_and_name(db_path, product_code, date_info, time_info)
         # current_image = camera_handler.capture_image(absolute_path_to_db, image_file_name)
 
         product_detected_result = {}
         product_execution_time = 0
 
+        # Algorithm decision
         if product_code in product_function_model_map:
             product_main_function, model_global, model_local = product_function_model_map[product_code]
 
             product_detected_result, product_execution_time = product_main_function(
-                test_usage_image_path,
+                product_03_test_usage_image_path,
                 model_global,
                 model_local
             )
 
-        # 提取fail座標
+        # Extract Fail data
         fail_coords = [f"{key[0]}, {key[1]}" for key, value in product_detected_result.items() if value == 'fail']
         value_ary = fail_coords if fail_coords else "pass"
 
