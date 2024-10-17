@@ -9,9 +9,6 @@ import json
 app = Flask(__name__)
 # camera_handler = CameraHandler()
 
-db_path = r'C:\ichun_test'
-
-
 with open('path_config.json', 'r') as file:
     path_config = json.load(file)
 
@@ -20,11 +17,13 @@ product_function_model_map = {
     'product_03': (
         product_03_main,
         YOLO(path_config["product_03_model_global_path"]),
-        YOLO(path_config["product_03_model_local_path"]))
+        YOLO(path_config["product_03_model_local_path"])
+    )
 }
 
 
 product_03_test_usage_image_path = path_config["product_03_test_image_path"]
+db_path = path_config["product_03_db_path"]
 
 
 @app.route('/MetalMarkAI', methods=['POST'])
