@@ -35,9 +35,6 @@ class CameraHandler:
                         os.makedirs(temporary_folder, exist_ok=True)
 
 
-                        # 儲存影像
-                        if os.path.exists(current_image_path):
-                            os.remove(current_image_path)
                         cv2.imwrite(current_image_path, cropped_image)
                         cv2.imwrite(db_image_path, cropped_image)
                         print("image saved")

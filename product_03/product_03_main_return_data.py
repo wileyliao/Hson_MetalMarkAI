@@ -130,9 +130,6 @@ def calculate_matrix_positions_and_relations(stage, temporary_folder, boxes, res
     result_image_db_path = os.path.join(abs_path_to_db, db_image_file_name)
 
     # 儲存標記後的圖片到指定的 temporary_folder
-    if os.path.exists(result_image_temporary_path):
-        print('existttttttttttttttttttttttttt')
-        os.remove(result_image_temporary_path)
     cv2.imwrite(result_image_temporary_path, image_global_padding_resized_copy)
     cv2.imwrite(result_image_db_path, image_global_padding_resized_copy)
 
