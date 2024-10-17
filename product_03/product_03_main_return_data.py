@@ -1,3 +1,7 @@
+import cv2
+import os
+
+
 def calculate_matrix_positions(boxes):
     """
     根據產品框座標計算它們在 2x2 矩陣中的相對位置。
@@ -70,7 +74,7 @@ def check_point_and_door_relation(results_dict, boxes):
     return relations
 
 
-def calculate_matrix_positions_and_relations(boxes, results_dict):
+def calculate_matrix_positions_and_relations(stage, temporary_folder, boxes, results_dict, image_global_padding_resized_copy, abs_path_to_db, image_file_name):
     """
     根據產品框座標計算它們在 2x2 矩陣中的相對位置，並判斷 point 和 door 的相對位置關係。
 
@@ -82,6 +86,9 @@ def calculate_matrix_positions_and_relations(boxes, results_dict):
         matrix_relations: 字典，記錄每個產品的矩陣位置和 pass/fail 判斷。
                           格式為 {(row, col): "pass" or "fail"}
     """
+
+    scale_factor = 640 / 3200
+
     # 步驟 1：計算矩陣位置
     matrix_positions = calculate_matrix_positions(boxes)
 
@@ -94,5 +101,40 @@ def calculate_matrix_positions_and_relations(boxes, results_dict):
         # 使用矩陣位置作為鍵，將相應的判斷結果（pass/fail）存入字典
         relation_result = relations[idx]["relation"]
         matrix_relations[position] = relation_result
+
+        # 縮放 box 座標到 640x640 的影像尺寸
+        x1, y1, x2, y2 = [int(coord * scale_factor) for coord in boxes[idx]]
+        color = (0, 255, 0) if relation_result == "pass" else (0, 0, 255)  # 綠色表示 pass，紅色表示 fail
+
+        # 繪製框到 image_global_padding_resized_copy 上
+        cv2.rectangle(image_global_padding_resized_copy, (x1, y1), (x2, y2), color, 2)
+
+        # 在每個框的中心位置寫上文字標記
+        text = "PASS" if relation_result == "pass" else "FAIL"
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        text_size = cv2.getTextSize(text, font, 0.7, 2)[0]
+
+        # 計算文字在框中心的位置
+        text_x = x1 + (x2 - x1 - text_size[0]) // 2
+        text_y = y1 + (y2 - y1 + text_size[1]) // 2
+
+        # 繪製文字到框的中心
+        cv2.putText(image_global_padding_resized_copy, text, (text_x, text_y), font, 0.7, color, 2)
+
+    # 確保 temporary_folder 資料夾存在
+    os.makedirs(temporary_folder, exist_ok=True)
+
+    # 建立完整的儲存路徑
+    result_image_temporary_path = os.path.join(temporary_folder, f'result_0{stage}.png')
+    db_image_file_name = f'{image_file_name}_stage_0{stage}_result.png'
+    result_image_db_path = os.path.join(abs_path_to_db, db_image_file_name)
+
+    # 儲存標記後的圖片到指定的 temporary_folder
+    if os.path.exists(result_image_temporary_path):
+        print('existttttttttttttttttttttttttt')
+        os.remove(result_image_temporary_path)
+    cv2.imwrite(result_image_temporary_path, image_global_padding_resized_copy)
+    cv2.imwrite(result_image_db_path, image_global_padding_resized_copy)
+
 
     return matrix_relations
