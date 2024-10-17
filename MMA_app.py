@@ -45,7 +45,6 @@ def main():
 
         # current_image = camera_handler.capture_image(absolute_path_to_db, image_file_name)
 
-        # test_image = r"C:\Projects\upload\MetalMarkAI\product_01\test888.png"
         product_detected_result = {}
         product_execution_time = 0
 
