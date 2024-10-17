@@ -53,13 +53,12 @@ def main():
 
             product_detected_result, product_execution_time = product_main_function(
                 test_usage_image_path,
-                model_global, model_local
+                model_global,
+                model_local
             )
 
         # 提取fail座標
         fail_coords = [f"{key[0]}, {key[1]}" for key, value in product_detected_result.items() if value == 'fail']
-
-        # 判斷是否有fail的結果
         value_ary = fail_coords if fail_coords else "pass"
 
         return jsonify(
