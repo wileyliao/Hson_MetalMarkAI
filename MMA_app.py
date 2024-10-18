@@ -9,7 +9,7 @@ import json
 app = Flask(__name__)
 # camera_handler = CameraHandler()
 
-with open('path_config.json', 'r') as file:
+with open(r"C:\Projects\upload\MetalMarkAI\path_config.json", 'r') as file:
     path_config = json.load(file)
 
 
