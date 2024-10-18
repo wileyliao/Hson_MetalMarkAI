@@ -35,7 +35,7 @@ product_03_test_usage_image_path = os.path.normpath(path_config["product_03_test
 @app.route('/MetalMarkAI', methods=['POST'])
 def main():
     try:
-        camera_handler = CameraHandler()
+        # camera_handler = CameraHandler()
         # Receive data
         data = request.json['Data'][0]
         detect_stage = data.get('stage')
@@ -44,7 +44,7 @@ def main():
 
         # Get image form camera & write into disk
         abs_path_to_db, image_file_name = generate_file_path_and_name(db_path, product_code, date_info, time_info)
-        current_image = camera_handler.capture_image(product_03_temporary_folder, detect_stage, abs_path_to_db, image_file_name)
+        # current_image = camera_handler.capture_image(product_03_temporary_folder, detect_stage, abs_path_to_db, image_file_name)
 
         product_detected_result = {}
         product_execution_time = 0
@@ -55,7 +55,7 @@ def main():
 
             product_detected_result, product_execution_time = product_main_function(
                 detect_stage,
-                current_image,
+                product_03_test_usage_image_path,
                 product_03_temporary_folder,
                 model_global,
                 model_local,
@@ -65,7 +65,7 @@ def main():
 
         # Extract Fail data
         fail_coords = [f"{key[0]}, {key[1]}" for key, value in product_detected_result.items() if value == 'fail']
-        value_ary = fail_coords if fail_coords else "pass"
+        value_ary = fail_coords if fail_coords else None
 
         return jsonify(
             {
@@ -88,5 +88,5 @@ def main():
 
 
 if __name__ == '__main__':
-    app.run(port=3000)
+    app.run(port=2486, debug=True)
 

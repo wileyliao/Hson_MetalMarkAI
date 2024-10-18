@@ -21,6 +21,7 @@ class CameraHandler:
                     image = grab_result.Array
                     x, y, w, h = 506, 490, 2732, 1978
                     cropped_image = image[y:y + h, x:x + w]
+                    image_rotate = cv2.rotate(cropped_image, cv2.ROTATE_90_CLOCKWISE)
 
                     # 檢查影像是否為空
                     if image is not None and image.size > 0:
@@ -35,8 +36,8 @@ class CameraHandler:
                         os.makedirs(temporary_folder, exist_ok=True)
 
 
-                        cv2.imwrite(current_image_path, cropped_image)
-                        cv2.imwrite(db_image_path, cropped_image)
+                        cv2.imwrite(current_image_path, image_rotate)
+                        cv2.imwrite(db_image_path, image_rotate)
                         print("image saved")
                         break
                     else:
