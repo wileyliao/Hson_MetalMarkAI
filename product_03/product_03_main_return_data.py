@@ -74,18 +74,14 @@ def check_point_and_door_relation(results_dict, boxes):
     return relations
 
 
-def calculate_matrix_positions_and_relations(stage, temporary_folder, boxes, results_dict, image_global_padding_resized_copy, abs_path_to_db, image_file_name):
-    """
-    根據產品框座標計算它們在 2x2 矩陣中的相對位置，並判斷 point 和 door 的相對位置關係。
-
-    Args:
-        boxes: 每個產品的框座標列表，格式為 [(x1, y1, x2, y2), ...]
-        results_dict: 包含每張裁剪後圖片檢測結果的字典，格式為 {id: result}
-
-    Returns:
-        matrix_relations: 字典，記錄每個產品的矩陣位置和 pass/fail 判斷。
-                          格式為 {(row, col): "pass" or "fail"}
-    """
+def calculate_matrix_positions_and_relations(
+        stage,
+        temporary_folder,
+        boxes, results_dict,
+        image_global_padding_resized_copy,
+        abs_path_to_db,
+        image_file_name
+):
 
     scale_factor = 640 / 3200
 
@@ -95,43 +91,99 @@ def calculate_matrix_positions_and_relations(stage, temporary_folder, boxes, res
     # 步驟 2：判斷 point 和 door 的相對位置
     relations = check_point_and_door_relation(results_dict, boxes)
 
-    # 步驟 3：合併矩陣位置和判斷結果
     matrix_relations = {}
-    for idx, position in matrix_positions.items():
-        # 使用矩陣位置作為鍵，將相應的判斷結果（pass/fail）存入字典
-        relation_result = relations[idx]["relation"]
-        matrix_relations[position] = relation_result
 
-        # 縮放 box 座標到 640x640 的影像尺寸
-        x1, y1, x2, y2 = [int(coord * scale_factor) for coord in boxes[idx]]
-        color = (0, 255, 0) if relation_result == "pass" else (0, 0, 255)  # 綠色表示 pass，紅色表示 fail
+    # 步驟 3：合併矩陣位置和判斷與繪製結果
+    image_global_padding_resized_copy = cv2.rotate(image_global_padding_resized_copy, cv2.ROTATE_90_CLOCKWISE)
+    height, width = image_global_padding_resized_copy.shape[:2]
 
-        # 繪製框到 image_global_padding_resized_copy 上
-        cv2.rectangle(image_global_padding_resized_copy, (x1, y1), (x2, y2), color, 2)
+    if stage == '3':
+        min_left_x_of_right_half = width
+        for idx, position in matrix_positions.items():
+            # 使用矩陣位置作為鍵，將相應的判斷結果（pass/fail）存入字典
+            relation_result = relations[idx]["relation"]
+            matrix_relations[position] = relation_result
 
-        # 在每個框的中心位置寫上文字標記
-        text = "PASS" if relation_result == "pass" else "FAIL"
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        text_size = cv2.getTextSize(text, font, 0.7, 2)[0]
+            # 縮放 box 座標到 640x640 的影像尺寸
+            x1, y1, x2, y2 = [int(coord * scale_factor) for coord in boxes[idx]]
 
-        # 計算文字在框中心的位置
-        text_x = x1 + (x2 - x1 - text_size[0]) // 2
-        text_y = y1 + (y2 - y1 + text_size[1]) // 2
+            # 座標旋轉：旋轉90度後，新座標會變成 (x, y) -> (height - y2, x1) 和 (x2, y2) -> (height - y1, x2)
+            new_x1, new_y1 = height - y2, x1
+            new_x2, new_y2 = height - y1, x2
 
-        # 繪製文字到框的中心
-        cv2.putText(image_global_padding_resized_copy, text, (text_x, text_y), font, 0.7, color, 2)
+            color = (0, 255, 0) if relation_result == "pass" else (0, 0, 255)  # 綠色表示 pass，紅色表示 fail
 
-    # 確保 temporary_folder 資料夾存在
-    os.makedirs(temporary_folder, exist_ok=True)
+            # 繪製框到旋轉後的影像上
+            cv2.rectangle(image_global_padding_resized_copy, (new_x1, new_y1), (new_x2, new_y2), color, 2)
 
-    # 建立完整的儲存路徑
-    result_image_temporary_path = os.path.join(temporary_folder, f'result_0{stage}.png')
-    db_image_file_name = f'{image_file_name}_stage_0{stage}_result.png'
-    result_image_db_path = os.path.join(abs_path_to_db, db_image_file_name)
+            # 在每個框的中心位置寫上文字標記
+            text = "PASS" if relation_result == "pass" else "FAIL"
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            text_size = cv2.getTextSize(text, font, 0.7, 2)[0]
 
-    # 儲存標記後的圖片到指定的 temporary_folder
-    cv2.imwrite(result_image_temporary_path, image_global_padding_resized_copy)
-    cv2.imwrite(result_image_db_path, image_global_padding_resized_copy)
+            # 計算文字在框中心的位置
+            text_x = new_x1 + (new_x2 - new_x1 - text_size[0]) // 2
+            text_y = new_y1 + (new_y2 - new_y1 + text_size[1]) // 2
 
+            # 繪製文字到框的中心
+            cv2.putText(image_global_padding_resized_copy, text, (text_x, text_y), font, 0.7, color, 2)
+
+            # 判斷該框是否屬於右半部（即 new_x1 是否在圖片寬度的中間後面）
+            if new_x1 > width // 2:
+                # 記錄右半部框的最左邊座標
+                min_left_x_of_right_half = min(min_left_x_of_right_half, new_x1)
+
+        # 裁剪影像的左半部，範圍從右半部框最左邊的位置到影像最右側
+        image_cropped = image_global_padding_resized_copy[:, min_left_x_of_right_half - 20:width]
+
+        os.makedirs(temporary_folder, exist_ok=True)
+
+        # 建立完整的儲存路徑
+        result_image_temporary_path = os.path.join(temporary_folder, f'result_0{stage}.png')
+        db_image_file_name = f'{image_file_name}_stage_0{stage}_result.png'
+        result_image_db_path = os.path.join(abs_path_to_db, db_image_file_name)
+
+        cv2.imwrite(result_image_temporary_path, image_cropped)
+        cv2.imwrite(result_image_db_path, image_cropped)
+
+    else:
+        for idx, position in matrix_positions.items():
+            # 使用矩陣位置作為鍵，將相應的判斷結果（pass/fail）存入字典
+            relation_result = relations[idx]["relation"]
+            matrix_relations[position] = relation_result
+
+            # 縮放 box 座標到 640x640 的影像尺寸
+            x1, y1, x2, y2 = [int(coord * scale_factor) for coord in boxes[idx]]
+
+            # 座標旋轉：旋轉90度後，新座標會變成 (x, y) -> (height - y2, x1) 和 (x2, y2) -> (height - y1, x2)
+            new_x1, new_y1 = height - y2, x1
+            new_x2, new_y2 = height - y1, x2
+
+            color = (0, 255, 0) if relation_result == "pass" else (0, 0, 255)  # 綠色表示 pass，紅色表示 fail
+
+            # 繪製框到旋轉後的影像上
+            cv2.rectangle(image_global_padding_resized_copy, (new_x1, new_y1), (new_x2, new_y2), color, 2)
+
+            # 在每個框的中心位置寫上文字標記
+            text = "PASS" if relation_result == "pass" else "FAIL"
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            text_size = cv2.getTextSize(text, font, 1.5, 4)[0]
+
+            # 計算文字在框中心的位置
+            text_x = new_x1 + (new_x2 - new_x1 - text_size[0]) // 2
+            text_y = new_y1 + (new_y2 - new_y1 + text_size[1]) // 2
+
+            # 繪製文字到框的中心
+            cv2.putText(image_global_padding_resized_copy, text, (text_x, text_y), font, 1.5, color, 4)
+        # 確保 temporary_folder 資料夾存在
+        os.makedirs(temporary_folder, exist_ok=True)
+
+        # 建立完整的儲存路徑
+        result_image_temporary_path = os.path.join(temporary_folder, f'result_0{stage}.png')
+        db_image_file_name = f'{image_file_name}_stage_0{stage}_result.png'
+        result_image_db_path = os.path.join(abs_path_to_db, db_image_file_name)
+
+        cv2.imwrite(result_image_temporary_path, image_global_padding_resized_copy)
+        cv2.imwrite(result_image_db_path, image_global_padding_resized_copy)
 
     return matrix_relations
